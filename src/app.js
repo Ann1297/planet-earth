@@ -3,52 +3,48 @@ var scene = (function () {
 
     var scene = new THREE.Scene(),
         renderer = new THREE.WebGLRenderer({alpha: true}),
-        camera, earth, material;
+        camera, earth, background;
 
     function initScene() {
         renderer.setSize(window.innerWidth, window.innerHeight);
 
         document.getElementById('container').appendChild(renderer.domElement);
 
-        camera = new THREE.PerspectiveCamera(
-            35,
-            window.innerWidth / window.innerHeight,
-            1,
-            1000
-        );
-
+        camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000 );
         camera.position.set(-25, 0, 230);
         scene.add(camera);
 
-        //var material = new THREE.MeshBasicMaterial({wireframe: true, color: 0xA1D490});
+        initBackground();
+        scene.add(background);
 
-        // instantiate a loader
-        var loader = new THREE.TextureLoader();
+        initEarth();
+        scene.add(earth);
 
-        // load a resource
-        loader.load('textures/earth.jpg',
-            function ( texture ) {
-                material = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0.5  } );
-                earth = new THREE.Mesh(new THREE.SphereGeometry(50, 50, 50), material);
-                earth.position.x = 0;
-                scene.add(earth);
-
-                render();
-            },
-	        // Function called when download progresses
-	        function ( xhr ) {
-		        console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-	        },
-	        // Function called when download errors
-	        function ( xhr ) {
-		        console.log( 'An error happened' );
-        });
+        render();
     }
 
     function render() {
         earth.rotation.y += 0.005;
         renderer.render(scene, camera);
         requestAnimationFrame(render);
+    }
+    
+    function initBackground() {
+        var bgGeometry = new THREE.SphereGeometry( 500, 60, 40 );
+        bgGeometry.scale( - 1, 1, 1 );
+        var bgMaterial = new THREE.MeshBasicMaterial( {
+            map: new THREE.TextureLoader().load( 'textures/stars.jpg' ), overdraw: 0.5
+        } );
+        background = new THREE.Mesh( bgGeometry, bgMaterial );
+    }
+
+    function initEarth() {
+        var earthGeometry = new THREE.SphereGeometry(50, 50, 50);
+        var earthMaterial = new THREE.MeshBasicMaterial( {
+            map: new THREE.TextureLoader().load( 'textures/earth.jpg' ), overdraw: 0.5
+        } );
+        earth = new THREE.Mesh(earthGeometry, earthMaterial);
+        earth.position.x = 0;
     }
 
     return {
