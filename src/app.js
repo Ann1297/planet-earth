@@ -1,5 +1,6 @@
 var scene = (function () {
     'use strict';
+
     var scene = new THREE.Scene(),
         renderer = new THREE.WebGLRenderer({alpha: true}),
         camera, earth;
@@ -16,7 +17,7 @@ var scene = (function () {
             1000
         );
 
-        camera.position.set(-25,0,230);
+        camera.position.set(-25, 0, 230);
         scene.add(camera);
 
         var material = new THREE.MeshBasicMaterial({wireframe: true, color: 0xA1D490});
