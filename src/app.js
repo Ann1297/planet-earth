@@ -3,7 +3,7 @@ var scene = (function () {
 
     var scene = new THREE.Scene(),
         renderer = new THREE.WebGLRenderer({alpha: true}),
-        camera, earth, background;
+        camera, earth, background, light, light2;
 
     function initScene() {
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -14,13 +14,9 @@ var scene = (function () {
         camera.position.set(-25, 0, 230);
         scene.add(camera);
 
+        addLidht();
         initBackground();
-        scene.add(background);
-
         initEarth();
-        scene.add(earth);
-
-        render();
     }
 
     function render() {
@@ -31,20 +27,45 @@ var scene = (function () {
     
     function initBackground() {
         var bgGeometry = new THREE.SphereGeometry( 500, 60, 40 );
-        bgGeometry.scale( - 1, 1, 1 );
-        var bgMaterial = new THREE.MeshBasicMaterial( {
-            map: new THREE.TextureLoader().load( 'textures/stars.jpg' ), overdraw: 0.5
-        } );
-        background = new THREE.Mesh( bgGeometry, bgMaterial );
+        bgGeometry.scale( -1, 1, 1 );
+
+        var loader = new THREE.TextureLoader();
+        loader.load(
+            'textures/stars.jpg',
+            function(texture){
+                var bgMaterial = new THREE.MeshBasicMaterial( { map: texture, overdraw: 0.5} );
+                background = new THREE.Mesh( bgGeometry, bgMaterial );
+                scene.add(background);
+                render();
+            });
     }
 
     function initEarth() {
         var earthGeometry = new THREE.SphereGeometry(50, 50, 50);
-        var earthMaterial = new THREE.MeshBasicMaterial( {
-            map: new THREE.TextureLoader().load( 'textures/earth.jpg' ), overdraw: 0.5
-        } );
-        earth = new THREE.Mesh(earthGeometry, earthMaterial);
-        earth.position.x = 0;
+
+        var loader = new THREE.TextureLoader();
+        loader.load(
+            'textures/earth.jpg',
+            function(texture){
+                var earthMaterial = new THREE.MeshLambertMaterial( { map: texture, overdraw: 0.5 });
+                earth = new THREE.Mesh(earthGeometry, earthMaterial);
+                scene.add(background);
+                earth = new THREE.Mesh(earthGeometry, earthMaterial);
+                earth.position.x = 0;
+                scene.add(earth);
+                render();
+            });
+    }
+
+    function addLidht() {
+        light = new THREE.DirectionalLight( 0xFFFFFF, 0.8);
+        light.position.set(100, 50, 100);
+
+        light2 = new THREE.AmbientLight( 0xFFFFFF, 0.4);
+        light2.position.set(100, 50, 100);
+
+        scene.add(light);
+        scene.add(light2);
     }
 
     return {
